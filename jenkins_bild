@@ -1,0 +1,36 @@
+echo "Testing web projekt"
+cd /home/jenkins/workspace/My_job
+result=`grep "DevOps" index.html | wc -l`
+echo $result
+if [ "$result" = "1" ]
+then 
+	echo "Test passed"
+else 
+	echo "Test not passed"
+    exit 1
+fi
+
+cd /home/jenkins/workspace/My_job
+
+git log --pretty=format:"%s" -1 > result
+serch='v[0-9]*.0'
+com=`git log --pretty=format:"%s" -1`
+
+if grep -q $serch result; then
+	
+    if cmp -s /home/jenkins/workspace/My_job/index.html /home/jenkins/first-project-AWS-Docker/index.html; then
+		echo "File already updated to stable version"
+        
+    else
+    	echo "New version found"
+        cp index.html /var/www/epamprod.com/public_html/index.html
+        cp -r /home/jenkins/workspace/My_job/index.html /home/jenkins/first-project-AWS-Docker
+        cd /home/jenkins/first-project-AWS-Docker
+        git add index.html
+        git commit -m "$com"
+        git push
+    fi
+    
+else
+    echo "New version not found"
+fi
