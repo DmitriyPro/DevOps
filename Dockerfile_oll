@@ -1,0 +1,81 @@
+FROM ubuntu:18.04 as base
+
+USER root
+
+RUN useradd -rm -d /home/jenkins -s /bin/bash -g root -G sudo -u 1000 jenkins
+
+# USER jenkins
+
+RUN apt-get update -y \
+    && apt-get install openjdk-8-jre -y \
+    && apt install wget -y \
+    && wget -q -O - https://pkg.jenkins.io/debian/jenkins.io.key | apt-key add - \
+    && sh -c 'echo deb https://pkg.jenkins.io/debian-stable binary/ > /etc/apt/sources.list.d/jenkins.list' \
+    && apt-get update -y \
+    && apt-get install nano -y
+
+USER jenkins
+WORKDIR /home/jenkins
+
+EXPOSE 8080
+# Создаем директорию, в которой будет наш контейнер
+# RUN mkdir -p /home/$(whoami)/docker-jenkins
+
+# Перйдем в созданную рабочую директорю
+# WORKDIR /home/$(whoami)/docker-jenkins
+
+# COPY /var/jenkins_home/config.xml /var/jenkins_home/jobs/jobFirst/config.xml
+
+# Выполнить команды от root-пользоателя
+# USER root
+
+# Скачиваем все необходимое для работы в образ jenkins/jenkins
+#RUN apt-get update -y \
+# && apt-get install nano -y
+
+# Выполнить команды от jenkins-пользоателя
+# USER jenkins
+
+# Устанавливаем переменные
+# Убераем необходимость стандартных настроек
+# ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+# Дадим имя пользователю и пароль для него (пока не ясно можно ли использовать)
+# ENV JENKINS_USER="jenkins"
+# ENV JENKINS_PASS="jenkins"
+# Определяем путь к домашней директории
+# ENV JENKINS_HOME="/var/jenkins_home"
+
+# Устанавливаем плагины
+#RUN /usr/local/bin/install-plugins.sh \
+#  git:latest \
+#  credentials:latest \
+#  greenballs:latest \
+#  publish-over-ssh:latest \
+#  ssh-agent:latest \
+#  ssh-slaves:latest \
+#  github:latest
+
+
+# Устанавливаем аргументы
+# Путь хранения job-ов
+# ARG jobPATH="/var/jenkins_home/jobs"
+# Имя первого job-а
+# ARG jobName="first-job"
+# Путь к домашней директории jenkins
+# ARG homePATH="/var/jenkins_home"
+
+# USER root
+# Создание рабочей директории для job-а
+# RUN mkdir -p /var/jenkins_home/workspace/jobName
+# Создаем директорию места хранения для job-а
+# RUN mkdir -p /var/jenkins_home/jobs/jobName
+#
+# RUN mkdir -p "$JENKINS_HOME"/jobs/${jobName}/latest/
+# RUN mkdir -p "$JENKINS_HOME"/jobs/${jobName}/builds/1/
+# USER jenkins
+
+# Открываем порты
+# EXPOSE 8080
+
+# Запустим apache2 и ssh
+# CMD service apache2 start && service ssh start
